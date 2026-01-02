@@ -35,7 +35,20 @@ def test_add_new_user(setup_database, connection):
     cursor.execute("SELECT * FROM users WHERE username='testuser';")
     user = cursor.fetchone()
     assert user, "Kullanıcı veri tabanına eklenmiş olmalıdır."
+def test_wrong_password(setup_database, connection):
+    """Yeni bir kullanıcının eklenmesini test eder."""
+    add_user('testuser2', 'testuser@example.com', 'password123455')
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM users WHERE username='testuser';")
+    result = authenticate_user('testuser2', 'wrongpassword')
+    assert not result, "Yanlış şifre ile doğrulama başarısız olmalıdır."
 
+
+
+def test_add_existing_user(setup_database, connection):
+    """Var olan bir kullanıcı adıyla kullanıcı eklemeye çalışmayı test eder."""
+    add_user('existinguser', 'existinguser@example.com', 'password123')
+    result = add_user('existinguser', 'existinguser2@example.com', 'password456')
 # İşte yazabileceğiniz bazı testler:
 """
 Var olan bir kullanıcı adıyla kullanıcı eklemeye çalışmayı test etme.
